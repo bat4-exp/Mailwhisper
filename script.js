@@ -1,86 +1,62 @@
+let recording = false; // To track whether recording is in progress
+
+// Handle record button click event
 const recordBtn = document.getElementById("recordBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const copyBtn = document.getElementById("copyBtn");
-const clearBtn = document.getElementById("clearBtn");
-const outputText = document.getElementById("outputText");
-const settingsPopup = document.getElementById("settingsPopup");
-const closeBtn = document.querySelector(".close-btn");
-const translateToggle = document.getElementById("translateToggle");
-const languageSelect = document.getElementById("languageSelect");
-
-let recording = false;
-let audioBlob = null; // Store audio data here
-
-// Cloudflare Worker URL
-const WORKER_URL = "https://raspy-tooth-a631.bram-admiraal.workers.dev/";  // Replace with your Worker URL
-
 recordBtn.addEventListener("click", () => {
     if (!recording) {
-        recordBtn.textContent = "⏹️ Stop";
-        startRecording();
+        recordBtn.textContent = "⏹️ Stop";  // Change button text when recording starts
+        startRecording();  // Start recording
     } else {
-        recordBtn.textContent = "🎤 Record";
-        stopRecording();
+        recordBtn.textContent = "🎤 Record";  // Change button text when recording stops
+        stopRecording();  // Stop recording
     }
-    recording = !recording;
+    recording = !recording;  // Toggle the state of recording
 });
 
-settingsBtn.addEventListener("click", () => {
-    settingsPopup.style.display = "block";
-});
-
-closeBtn.addEventListener("click", () => {
-    settingsPopup.style.display = "none";
-});
-
-clearBtn.addEventListener("click", () => {
-    outputText.value = "";
-    copyBtn.style.display = "none";
-});
-
-outputText.addEventListener("input", () => {
-    copyBtn.style.display = outputText.value ? "block" : "none";
-});
-
-copyBtn.addEventListener("click", () => {
-    outputText.select();
-    document.execCommand("copy");
-    alert("Copied to clipboard!");
-});
-
-translateToggle.addEventListener("change", () => {
-    languageSelect.style.display = translateToggle.checked ? "block" : "none";
-});
-
-// Function to start recording
+// Start recording function
 async function startRecording() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    
-    mediaRecorder.start();
-    
-    const chunks = [];
-    mediaRecorder.ondataavailable = event => chunks.push(event.data);
-    mediaRecorder.onstop = async () => {
-        audioBlob = new Blob(chunks, { type: 'audio/mp3' });
-    };
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Microphone stream:", stream);
+        
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();  // Start recording
+        
+        const chunks = [];
+        mediaRecorder.ondataavailable = event => chunks.push(event.data);
+        
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(chunks, { type: 'audio/mp3' });
+            console.log("Audio Blob:", audioBlob);
+            // Call a function to send this audio to Cloudflare Worker
+            sendToCloudflare(audioBlob);
+        };
 
-    // Stop recording after 10 seconds (adjust as necessary)
-    setTimeout(() => {
-        mediaRecorder.stop();
-    }, 10000); // Stop after 10 seconds
+        // Stop recording after 10 seconds for testing purposes
+        setTimeout(() => {
+            mediaRecorder.stop();
+        }, 10000);  // Stop after 10 seconds for testing
+    } catch (error) {
+        console.error("Error accessing microphone:", error);
+        alert("Please allow microphone access to record audio.");
+    }
 }
 
-// Function to stop recording and send audio to the Cloudflare Worker
-async function stopRecording() {
+// Stop recording function
+function stopRecording() {
+    // The recording will automatically stop after 10 seconds, or you can add manual stop functionality here.
+}
+
+// Function to send audio data to Cloudflare Worker
+async function sendToCloudflare(audioBlob) {
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.mp3");
-    formData.append("jargon", document.getElementById("jargon").value);
-    formData.append("header", document.getElementById("header").value);
-    formData.append("footer", document.getElementById("footer").value);
-
+    formData.append("jargon", document.getElementById("jargon").value);  // Collect jargon input
+    formData.append("header", document.getElementById("header").value);  // Collect header input
+    formData.append("footer", document.getElementById("footer").value);  // Collect footer input
+    
     try {
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch('YOUR_WORKER_URL', {
             method: "POST",
             body: formData,
         });
@@ -90,7 +66,7 @@ async function stopRecording() {
         }
 
         const emailText = await response.text();
-        outputText.value = emailText;
+        document.getElementById("outputText").value = emailText;  // Display email in output field
     } catch (error) {
         console.error("Error:", error);
         alert("There was an error processing your request.");
