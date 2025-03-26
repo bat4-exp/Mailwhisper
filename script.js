@@ -9,6 +9,10 @@ const translateToggle = document.getElementById("translateToggle");
 const languageSelect = document.getElementById("languageSelect");
 
 let recording = false;
+let audioBlob = null; // Store audio data here
+
+// Cloudflare Worker URL
+const WORKER_URL = "https://raspy-tooth-a631.bram-admiraal.workers.dev/";  // Replace with your Worker URL
 
 recordBtn.addEventListener("click", () => {
     if (!recording) {
@@ -48,12 +52,47 @@ translateToggle.addEventListener("change", () => {
     languageSelect.style.display = translateToggle.checked ? "block" : "none";
 });
 
-function startRecording() {
-    console.log("Recording started...");
-    // Implement recording functionality
+// Function to start recording
+async function startRecording() {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    
+    mediaRecorder.start();
+    
+    const chunks = [];
+    mediaRecorder.ondataavailable = event => chunks.push(event.data);
+    mediaRecorder.onstop = async () => {
+        audioBlob = new Blob(chunks, { type: 'audio/mp3' });
+    };
+
+    // Stop recording after 10 seconds (adjust as necessary)
+    setTimeout(() => {
+        mediaRecorder.stop();
+    }, 10000); // Stop after 10 seconds
 }
 
-function stopRecording() {
-    console.log("Recording stopped...");
-    // Implement stop and send recording functionality
+// Function to stop recording and send audio to the Cloudflare Worker
+async function stopRecording() {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.mp3");
+    formData.append("jargon", document.getElementById("jargon").value);
+    formData.append("header", document.getElementById("header").value);
+    formData.append("footer", document.getElementById("footer").value);
+
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error("Error generating email");
+        }
+
+        const emailText = await response.text();
+        outputText.value = emailText;
+    } catch (error) {
+        console.error("Error:", error);
+        alert("There was an error processing your request.");
+    }
 }
