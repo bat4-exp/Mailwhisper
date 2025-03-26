@@ -56,7 +56,7 @@ async function sendToCloudflare(audioBlob) {
     formData.append("footer", document.getElementById("footer").value);  // Collect footer input
     
     try {
-        const response = await fetch('YOUR_WORKER_URL', {
+        const response = await fetch('raspy-tooth-a631.bram-admiraal.workers.dev', {
             method: "POST",
             body: formData,
         });
