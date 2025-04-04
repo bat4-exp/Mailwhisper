@@ -62,3 +62,21 @@ textarea {
     cursor: pointer;
     float: right;
 }
+
+.recording {
+    background-color: red;
+    color: white;
+}
+
+.record-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.recording:hover {
+    background-color: darkred;
+}
