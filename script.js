@@ -1,6 +1,6 @@
 document.getElementById("testBtn").addEventListener("click", async () => {
     try {
-        const response = await fetch("raspy-tooth-a631.bram-admiraal.workers.dev", {
+        const response = await fetch("https://raspy-tooth-a631.bram-admiraal.workers.dev", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
