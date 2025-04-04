@@ -42,14 +42,19 @@ recordBtn.addEventListener("click", async () => {
 
         mediaRecorder.start();
         isRecording = true;
-        recordBtn.textContent = "⏹️ Stop";
+        // Change button to red and show "Recording"
+        recordBtn.textContent = "Recording...";
+        recordBtn.classList.add("recording");
     } else {
         // Stop recording
         mediaRecorder.stop();
         isRecording = false;
+        // Change button back to normal state
         recordBtn.textContent = "🎤 Record";
+        recordBtn.classList.remove("recording");
     }
 });
+
 
 async function sendToWhisper(audioBlob) {
     const formData = new FormData();
