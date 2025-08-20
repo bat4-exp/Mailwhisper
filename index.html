@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice to Business Email Converter</title>
+    <title>Mailwhisper</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -51,16 +51,7 @@
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Voice to Business Email</h1>
             <p class="text-gray-600 max-w-2xl mx-auto">Record your thoughts and instantly transform them into professional business emails in multiple languages.</p>
         </header>
-
-        <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Left Ad Space -->
-            <div class="w-full lg:w-1/6 bg-gray-100 rounded-lg p-4 flex items-center justify-center">
-                <div class="text-center text-gray-500">
-                    <i class="fas fa-ad text-4xl mb-2"></i>
-                    <p>Advertisement Space</p>
-                </div>
-            </div>
-
+        <div class="flex flex-col gap-6">
             <div class="flex-1">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
                     <div class="p-6">
@@ -89,12 +80,10 @@
                                 <input type="text" id="email-footer" placeholder="Optional footer text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
-
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jargon/Technical Terms (comma separated)</label>
                             <input type="text" id="jargon-terms" placeholder="e.g. API, SaaS, ROI, KPI" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
-
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-1">AI Creativity</label>
                             <div class="flex items-center gap-4">
@@ -103,19 +92,17 @@
                                 <span class="text-sm text-gray-500">Creative</span>
                             </div>
                         </div>
-
                         <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                            <button id="record-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                            <button id="record-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                                 <i class="fas fa-microphone"></i> Start Recording
                             </button>
-                            <button id="pause-btn" disabled class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                            <button id="pause-btn" disabled class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                                 <i class="fas fa-pause"></i> Pause
                             </button>
-                            <button id="stop-btn" disabled class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                            <button id="stop-btn" disabled class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                                 <i class="fas fa-stop"></i> Stop & Convert
                             </button>
                         </div>
-
                         <div id="recording-indicator" class="hidden mb-6">
                             <div class="waveform"></div>
                             <p class="text-sm text-gray-500 mt-2 flex items-center gap-2">
@@ -123,7 +110,6 @@
                                 <span id="recording-time">00:00</span>
                             </p>
                         </div>
-
                         <div class="mb-2 flex justify-between items-center">
                             <label class="block text-sm font-medium text-gray-700">Transcription / Email</label>
                             <button id="copy-btn" class="text-sm text-blue-600 hover:text-blue-800 hidden">
@@ -131,7 +117,7 @@
                             </button>
                         </div>
                         <div class="relative">
-                            <textarea id="transcription-text" rows="12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Your transcription will appear here..."></textarea>
+                            <textarea id="transcription-text" rows="12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Your transcribed email will appear here"></textarea>
                             <div id="processing-indicator" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden">
                                 <div class="text-center">
                                     <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-2"></div>
@@ -142,315 +128,159 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Right Ad Space -->
-            <div class="w-full lg:w-1/6 bg-gray-100 rounded-lg p-4 flex items-center justify-center">
-                <div class="text-center text-gray-500">
-                    <i class="fas fa-ad text-4xl mb-2"></i>
-                    <p>Advertisement Space</p>
-                </div>
-            </div>
         </div>
-    </div>
 
     <script>
-        // DOM Elements
-        const recordBtn = document.getElementById('record-btn');
-        const pauseBtn = document.getElementById('pause-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const copyBtn = document.getElementById('copy-btn');
-        const transcriptionText = document.getElementById('transcription-text');
-        const recordingIndicator = document.getElementById('recording-indicator');
-        const recordingTime = document.getElementById('recording-time');
-        const processingIndicator = document.getElementById('processing-indicator');
-        const languageSelect = document.getElementById('language-select');
-        const emailHeader = document.getElementById('email-header');
-        const emailFooter = document.getElementById('email-footer');
-        const jargonTerms = document.getElementById('jargon-terms');
-        const creativitySlider = document.getElementById('creativity-slider');
+    // Set your Cloudflare Worker URL here:
+    const WORKER_URL = "https://mailwhisper.bram-admiraal.workers.dev";
 
-        // Variables for recording
-        let mediaRecorder;
-        let audioChunks = [];
-        let recordingStartTime;
-        let recordingTimer;
-        let isPaused = false;
-        let pauseStartTime;
-        let totalPausedTime = 0;
-        let transcription = '';
+    // DOM Elements
+    const recordBtn = document.getElementById('record-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const transcriptionText = document.getElementById('transcription-text');
+    const recordingIndicator = document.getElementById('recording-indicator');
+    const recordingTime = document.getElementById('recording-time');
+    const processingIndicator = document.getElementById('processing-indicator');
+    const languageSelect = document.getElementById('language-select');
+    const emailHeader = document.getElementById('email-header');
+    const emailFooter = document.getElementById('email-footer');
+    const jargonTerms = document.getElementById('jargon-terms');
+    const creativitySlider = document.getElementById('creativity-slider');
 
-        // Sample business email templates for different languages
-        const emailTemplates = {
-            en: {
-                greeting: "Dear [Recipient],",
-                closing: "Best regards,\n[Your Name]",
-                style: "formal"
-            },
-            es: {
-                greeting: "Estimado/a [Recipient],",
-                closing: "Saludos cordiales,\n[Your Name]",
-                style: "formal"
-            },
-            fr: {
-                greeting: "Cher [Recipient],",
-                closing: "Cordialement,\n[Your Name]",
-                style: "formal"
-            },
-            de: {
-                greeting: "Sehr geehrter [Recipient],",
-                closing: "Mit freundlichen Grüßen,\n[Your Name]",
-                style: "formal"
-            },
-            it: {
-                greeting: "Egregio [Recipient],",
-                closing: "Distinti saluti,\n[Your Name]",
-                style: "formal"
-            },
-            pt: {
-                greeting: "Prezado [Recipient],",
-                closing: "Atenciosamente,\n[Your Name]",
-                style: "formal"
-            },
-            nl: {
-                greeting: "Geachte [Recipient],",
-                closing: "Met vriendelijke groet,\n[Your Name]",
-                style: "formal"
-            },
-            ja: {
-                greeting: "[Recipient]様",
-                closing: "敬具\n[Your Name]",
-                style: "formal"
-            },
-            zh: {
-                greeting: "尊敬的[Recipient]:",
-                closing: "此致\n敬礼\n[Your Name]",
-                style: "formal"
-            },
-            ru: {
-                greeting: "Уважаемый [Recipient],",
-                closing: "С уважением,\n[Your Name]",
-                style: "formal"
-            }
-        };
+    // Recording state
+    let mediaRecorder;
+    let audioChunks = [];
+    let recordingStartTime;
+    let recordingTimer;
+    let isPaused = false;
+    let pauseStartTime;
+    let totalPausedTime = 0;
 
-        // Event Listeners
-        recordBtn.addEventListener('click', startRecording);
-        pauseBtn.addEventListener('click', togglePause);
-        stopBtn.addEventListener('click', stopRecording);
-        copyBtn.addEventListener('click', copyToClipboard);
+    recordBtn.addEventListener('click', startRecording);
+    pauseBtn.addEventListener('click', togglePause);
+    stopBtn.addEventListener('click', stopRecording);
+    copyBtn.addEventListener('click', copyToClipboard);
 
-        // Functions
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
                 mediaRecorder = new MediaRecorder(stream);
-                
+                audioChunks = [];
                 mediaRecorder.ondataavailable = event => {
                     audioChunks.push(event.data);
                 };
-                
                 mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    // In a real app, you would send this to a transcription API
-                    simulateTranscription(audioBlob);
+                    sendAudioToWorker(audioBlob);
                 };
-                
-                audioChunks = [];
-                mediaRecorder.start(100); // Collect data every 100ms
+                mediaRecorder.start(100);
                 recordingStartTime = new Date();
                 totalPausedTime = 0;
                 startRecordingTimer();
-                
                 recordBtn.disabled = true;
                 pauseBtn.disabled = false;
                 stopBtn.disabled = false;
                 recordingIndicator.classList.remove('hidden');
-                
                 recordBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
                 recordBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
+            })
+            .catch(error => {
                 alert('Could not access microphone. Please check permissions.');
-            }
-        }
+            });
+    }
 
-        function togglePause() {
-            if (isPaused) {
-                // Resume recording
-                mediaRecorder.resume();
-                totalPausedTime += (new Date() - pauseStartTime);
-                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-                pauseBtn.classList.remove('bg-gray-500');
-                pauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
-                startRecordingTimer();
-            } else {
-                // Pause recording
-                mediaRecorder.pause();
-                pauseStartTime = new Date();
-                clearInterval(recordingTimer);
-                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
-                pauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-                pauseBtn.classList.add('bg-gray-500');
-            }
-            isPaused = !isPaused;
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                clearInterval(recordingTimer);
-                
-                // Stop all tracks in the stream
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                
-                recordBtn.disabled = false;
-                pauseBtn.disabled = true;
-                stopBtn.disabled = true;
-                recordingIndicator.classList.add('hidden');
-                
-                recordBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-                recordBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            }
-        }
-
-        function startRecordingTimer() {
+    function togglePause() {
+        if (!mediaRecorder) return;
+        if (isPaused) {
+            mediaRecorder.resume();
+            totalPausedTime += (new Date() - pauseStartTime);
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            pauseBtn.classList.remove('bg-gray-500');
+            pauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+            startRecordingTimer();
+        } else {
+            mediaRecorder.pause();
+            pauseStartTime = new Date();
             clearInterval(recordingTimer);
-            recordingTimer = setInterval(() => {
-                const elapsed = new Date() - recordingStartTime - totalPausedTime;
-                const minutes = Math.floor(elapsed / 60000).toString().padStart(2, '0');
-                const seconds = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
-                recordingTime.textContent = `${minutes}:${seconds}`;
-            }, 1000);
+            pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+            pauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+            pauseBtn.classList.add('bg-gray-500');
         }
+        isPaused = !isPaused;
+    }
 
-        function simulateTranscription(audioBlob) {
-            // In a real app, you would send the audioBlob to a transcription API
-            // For this demo, we'll simulate transcription with sample text
-            
-            processingIndicator.classList.remove('hidden');
-            
-            // Simulate API delay
-            setTimeout(() => {
-                // Sample transcription based on recording time
-                const elapsed = new Date() - recordingStartTime - totalPausedTime;
-                const wordCount = Math.floor(elapsed / 300); // Approx 200 words per minute
-                
-                transcription = generateSampleTranscription(wordCount);
-                transcriptionText.value = transcription;
-                
-                // Now convert to business email
-                convertToBusinessEmail();
-                
-                processingIndicator.classList.add('hidden');
-                copyBtn.classList.remove('hidden');
-            }, 2000);
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            clearInterval(recordingTimer);
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            recordBtn.disabled = false;
+            pauseBtn.disabled = true;
+            stopBtn.disabled = true;
+            recordingIndicator.classList.add('hidden');
+            recordBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+            recordBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
         }
+    }
 
-        function generateSampleTranscription(wordCount) {
-            const samplePhrases = [
-                "I wanted to follow up on our meeting yesterday",
-                "Regarding the project timeline we discussed",
-                "The quarterly results show significant improvement",
-                "We should consider the new market opportunities",
-                "The team has made excellent progress this month",
-                "Let's schedule a call to review the proposal",
-                "The client feedback was mostly positive",
-                "We need to address the budget constraints",
-                "The software update is scheduled for next week",
-                "Please find attached the report for your review",
-                "I recommend we proceed with the first option",
-                "The deadline has been extended by two weeks",
-                "Our competitors have launched a similar product",
-                "The analytics dashboard needs some adjustments",
-                "We've identified several key performance indicators",
-                "The user testing revealed some usability issues",
-                "The marketing campaign exceeded our expectations",
-                "We should prioritize the customer experience improvements",
-                "The technical team has resolved the major bugs",
-                "Let me know if you need any additional information"
-            ];
-            
-            // Add jargon terms if provided
-            const jargonList = jargonTerms.value.split(',').filter(term => term.trim() !== '');
-            if (jargonList.length > 0) {
-                samplePhrases.push(...jargonList.map(term => `Regarding the ${term.trim()} implementation`));
-            }
-            
-            let result = [];
-            let wordsUsed = 0;
-            
-            while (wordsUsed < wordCount && samplePhrases.length > 0) {
-                const randomIndex = Math.floor(Math.random() * samplePhrases.length);
-                const phrase = samplePhrases[randomIndex];
-                const phraseWordCount = phrase.split(' ').length;
-                
-                if (wordsUsed + phraseWordCount <= wordCount) {
-                    result.push(phrase);
-                    wordsUsed += phraseWordCount;
-                } else {
-                    // If we're close to the word count, just add a short phrase
-                    const shortPhrase = samplePhrases.find(p => p.split(' ').length <= 3);
-                    if (shortPhrase) {
-                        result.push(shortPhrase);
-                        wordsUsed += shortPhrase.split(' ').length;
-                    }
-                    break;
-                }
-            }
-            
-            return result.join('. ') + (result.length > 0 ? '.' : '');
-        }
+    function startRecordingTimer() {
+        clearInterval(recordingTimer);
+        recordingTimer = setInterval(() => {
+            const elapsed = new Date() - recordingStartTime - totalPausedTime;
+            const minutes = Math.floor(elapsed / 60000).toString().padStart(2, '0');
+            const seconds = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
+            recordingTime.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+    }
 
-        function convertToBusinessEmail() {
-            const selectedLanguage = languageSelect.value;
-            const template = emailTemplates[selectedLanguage] || emailTemplates['en'];
-            const creativity = parseInt(creativitySlider.value) / 100;
-            
-            // Get header and footer if provided
-            const header = emailHeader.value.trim();
-            const footer = emailFooter.value.trim();
-            
-            // Simulate AI processing with different creativity levels
-            let emailBody;
-            
-            if (creativity < 0.3) {
-                // Low creativity - very formal
-                emailBody = `I hope this message finds you well. ${transcription} Please don't hesitate to reach out if you require any further clarification or assistance.`;
-            } else if (creativity < 0.7) {
-                // Medium creativity - balanced
-                emailBody = `I'm reaching out regarding the following: ${transcription} Let me know your thoughts on this matter and if there's anything else you'd like to discuss.`;
-            } else {
-                // High creativity - more conversational
-                emailBody = `I wanted to touch base with you about a few things. ${transcription} What do you think about these points? I'm open to suggestions and would love to hear your perspective.`;
-            }
-            
-            // Construct the final email
-            let finalEmail = '';
-            
-            if (header) {
-                finalEmail += `${header}\n\n`;
-            }
-            
-            finalEmail += `${template.greeting}\n\n${emailBody}\n\n${template.closing}`;
-            
-            if (footer) {
-                finalEmail += `\n\n${footer}`;
-            }
-            
-            transcriptionText.value = finalEmail;
-        }
+    // Send to Cloudflare Worker, which should:
+    // 1. Use Deepgram API for transcription
+    // 2. Use Deepseek API for business email transformation
+    // 3. Return the generated email as plain text
+    function sendAudioToWorker(audioBlob) {
+        processingIndicator.classList.remove('hidden');
+        transcriptionText.value = '';
+        copyBtn.classList.add('hidden');
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.wav');
+        formData.append('language', languageSelect.value);
+        formData.append('header', emailHeader.value.trim());
+        formData.append('footer', emailFooter.value.trim());
+        formData.append('jargon', jargonTerms.value.trim());
+        formData.append('creativity', creativitySlider.value);
 
-        function copyToClipboard() {
-            transcriptionText.select();
-            document.execCommand('copy');
-            
-            // Visual feedback
-            const originalText = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            setTimeout(() => {
-                copyBtn.innerHTML = originalText;
-            }, 2000);
-        }
+        fetch(WORKER_URL, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('API error');
+            return response.text();
+        })
+        .then(emailText => {
+            transcriptionText.value = emailText;
+            copyBtn.classList.remove('hidden');
+        })
+        .catch(err => {
+            transcriptionText.value = 'Error: Could not process audio.';
+        })
+        .finally(() => {
+            processingIndicator.classList.add('hidden');
+        });
+    }
+
+    function copyToClipboard() {
+        transcriptionText.select();
+        document.execCommand('copy');
+        // Visual feedback
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+        }, 2000);
+    }
     </script>
 </body>
 </html>
